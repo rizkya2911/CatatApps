@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>CatatApp</title>
+    
+    <link rel="stylesheet" href="style/home.css">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+    
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  </head>
+
+<body>
+<nav>
+	<input id="nav-toggle" type="checkbox">
+	<div class="logo">
+        <a>CatatApp</a>
+    </div>
+	<ul class="links">
+		<li><a href="index.html">Beranda</a></li>
+		<li><a href="transaksi.html">Transaksi</a></li>
+		<li><a href="barang.html">Kelola Barang</a></li>
+    <li><a href="#" class="reset" id="reset">Reset Data</a></li>
+	</ul>
+	<label for="nav-toggle" class="icon-burger">
+		<div class="line"></div>
+		<div class="line"></div>
+		<div class="line"></div>
+	</label>
+</nav>
+
+<div class="container1">
+    <h1>Penjualan Hari Ini</h1>
+    <div class="row">
+        <div class="col-1" id="transaksi">
+            <h4>Transaksi</h4>
+        </div>
+        <div class="col-2" id="pendapatan">
+            <h4>Pendapatan</h4>
+        </div>
+    </div>
+</div>
+
+<div class="container2">
+    <a href="barang.html"><h1>Stok Barang</h1>
+    <img src="icon/arrow-right.svg" class="right-icon"></a>
+    <table id="stokbarang">
+      </table>
+</div>
+<a href="transaksi.html">
+<img src="icon/add.svg" class="add-icon">
+</a>
+<script type="text/javascript">
+  var db=openDatabase("CatatApp","1.0","CatatApp",65535); // itemDB is the database name
+  
+  $(function(){
+  
+  
+  loadData();
+  loadDataTransaksi(); 
+  loadDataPendapatan();//loading our records
+  
+  
+  
+  //CREATING TABLE STARTS HERE
+  
+  $(function(){
+  db.transaction(function(transaction){
+    var sql="CREATE TABLE items "+
+    "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+    "namabarang VARCHAR(100) NOT NULL,"+
+    "stok INT(5) NOT NULL,"+
+      "hargasatuan INT(10) NOT NULL)";
+    transaction.executeSql(sql,undefined,function(){
+      ;
+    },function(){
+      ;
+    })
+  });
+  });
+
+  $(function(){
+db.transaction(function(transaction){
+	var sql="CREATE TABLE items_ "+
+	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+	"namabarang VARCHAR(100) NOT NULL,"+
+	"stok INT(5) NOT NULL,"+
+    "hargasatuan INT(10) NOT NULL)";
+	transaction.executeSql(sql,undefined,function(){
+		;
+	},function(){
+		;
+	})
+});
+});
+
+  $(function(){
+    db.transaction(function(transaction){
+        var sql="CREATE TABLE transaction_ "+
+        "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+        "date_time text NOT NULL,"+
+        "namabarang VARCHAR(100) NOT NULL,"+
+        "jumlah INT(5) NOT NULL, harga INT(10) NOT NULL)";
+        transaction.executeSql(sql,undefined,function(){
+            ;
+        },function(){
+            ;
+        })
+    });
+    });
+  // CREATING TABLE ENDS HERE
+  
+  
+  //DELETING TABLE STARTS HERE
+  $("#remove").click(function(){
+  
+  if(!confirm("Are you sure to delete this table?","")) return;;
+  db.transaction(function(transaction){
+    var sql="DROP TABLE items";
+    transaction.executeSql(sql,undefined,function(){
+      alert("Table is deleted successfully")
+    },function(transaction,err){
+      alert(err.message);
+    })
+  });
+  });
+  //DELETING TABLE ENDS HERE
+  
+      //RESET DATA
+      $("#reset").click(function(){
+    db.transaction(function(transaction){
+    var sql="DROP TABLE items";
+    var sql2="DROP TABLE items_";
+    var sql3="DROP TABLE nota_table";
+    var sql4="DROP TABLE transaction_";
+    transaction.executeSql(sql,undefined,function(){
+    },function(transaction,err){
+        alert(err.message);
+    })
+    transaction.executeSql(sql2,undefined,function(){
+    },function(transaction,err){
+        alert(err.message);
+    })
+    transaction.executeSql(sql3,undefined,function(){
+    },function(transaction,err){
+        alert(err.message);
+    })
+    transaction.executeSql(sql4,undefined,function(){alert("Data Berhasil Dihapus");
+    },function(transaction,err){
+        alert(err.message);
+    })
+    }
+    );
+
+    })
+  
+  
+  //INSERTING DATA INTO TABLE
+  
+  $("#Tambah").click(function(){
+  var namabarang=$("#namabarang").val();
+  var stok=$("#stok").val();
+  var hargasatuan=$("#hargasatuan").val();
+  db.transaction(function(transaction){
+  var sql="INSERT INTO items(namabarang,stok,hargasatuan) VALUES(?,?,?)";
+  transaction.executeSql(sql,[namabarang,stok,hargasatuan],function(){loadData();
+  },function(transaction,err){
+    alert(err.message);
+  })
+  }
+  );
+  })
+  //INSERTING DATA ENDS HERE
+  
+  //Update Data
+  $("#Ubah").click(function(){
+  var namabarang=$("#namabarang").val();
+  var stok=$("#stok").val();
+  var hargasatuan=$("#hargasatuan").val();
+  db.transaction(function(transaction){
+  var sql="UPDATE items SET namabarang = ?, stok = ?, hargasatuan = ? WHERE namabarang = ?";
+  transaction.executeSql(sql,[namabarang,stok,hargasatuan,namabarang],function(){loadData();
+  },function(transaction,err){
+    alert(err.message);
+  })
+  }
+  );
+  })
+  
+  
+  //FETCHING OUR RECORD
+  $("#list").click(function(){
+  loadData();
+  })
+  
+  
+  
+  //FUNCTION TO LOAD OUR RECORDS
+  function loadData(){
+      $("#stokbarang").children().remove();
+    db.transaction(function(transaction){
+      var sql="select * from items_ order by stok asc";
+      transaction.executeSql(sql,undefined,function(transaction,result){
+  if(result.rows.length){
+      $("#stokbarang").append('<tr><th>Kode</th><th>Nama</th><th>Stok</th><th>Harga</th></tr>')
+  
+  for(var i=0;i<result.rows.length;i++){
+    var row=result.rows.item(i);
+    var namabarang=row.namabarang;
+    var id=row.id;
+    var stok=row.stok;
+      var hargasatuan = row.hargasatuan;
+    $("#stokbarang").append('<tr id="del'+id+'"><td>'+id+'</td><td>'+namabarang+'</td><td id="newqty'+id+'">'+stok+'</td><td>Rp'+hargasatuan+'</td></tr>');
+      $("#namabarang_").append('<option>'+namabarang+'</option>');
+  }
+  }else{
+    $("#stokbarang").append('<tr><td colspan="3" align="center">No Item Found</td></tr>');
+  }
+      },function(transaction,err){
+        ;
+      })
+    })
+  
+  
+  
+  
+  //setTimeout was used to execute codes inside it to be loaded after records are loaded/fetched.
+  
+  setTimeout(function(){
+    $(".deleteitem").click(function(){
+  var sure=confirm("Kamu yakin ingin menghapus barang?");
+  if(sure===true){
+    var id=$(this).data("id");
+  db.transaction(function(transaction){
+  var sql="DELETE FROM items where id=?";
+  transaction.executeSql(sql,[id],function(){
+    $("#del"+id).fadeOut();
+    alert("Barang berhasil di hapus");
+  },function(transaction,err){
+    alert(err.message);
+  })
+  });
+  }
+  })
+  
+  $(".updateitem").click(function(){
+  var qty=prompt("Kindly enter new quantity",1);
+  if(qty!==null){
+    var id=$(this).data("id");
+  db.transaction(function(transaction){
+  var sql="UPDATE items SET quantity=? where id=?";
+  transaction.executeSql(sql,[qty,id],function(){
+    $("#newqty"+id).html(qty);
+    alert("Item is updated successfully");
+  },function(transaction,err){
+    alert(err.message);
+  })
+  });
+  }
+  })
+  
+  },1000);
+  
+  
+  }
+
+  //END OF loadData() function
+  
+    //FUNCTION TO LOAD OUR RECORDS
+  function loadDataTransaksi(){
+        db.transaction(function(transaction){
+            var sql="select count(*) as transaksi from transaction_ where date_time = date('now')";
+            transaction.executeSql(sql,undefined,function(transaction,result){
+    if(result.rows.length){ 
+    for(var i=0;i<result.rows.length;i++){
+        var row=result.rows.item(i);
+        var transaksi = row.transaksi
+        $("#transaksi").append('<p>'+transaksi+'</p>');
+    }
+    }else{
+        $("#transaksi").append('<p>0</p>');
+    }
+            },function(transaction,err){
+                ;
+            })
+        })
+    
+    
+    
+    
+    //setTimeout was used to execute codes inside it to be loaded after records are loaded/fetched.
+    
+    setTimeout(function(){
+        $(".deleteitem").click(function(){
+    var sure=confirm("Are you sure to delete this item?");
+    if(sure===true){
+        var id=$(this).data("id");
+    db.transaction(function(transaction){
+    var sql="DELETE FROM nota_table where namabarang=?";
+    transaction.executeSql(sql,[id],function(){
+        $("#del"+id).fadeOut();
+        alert("Item is deleted successfully");
+        loadData();
+    },function(transaction,err){
+        alert(err.message);
+    })
+    });
+    }
+    })
+    
+    $(".updateitem").click(function(){
+    var qty=prompt("Kindly enter new quantity",1);
+    if(qty!==null){
+        var id=$(this).data("id");
+    db.transaction(function(transaction){
+    var sql="UPDATE items SET quantity=? where id=?";
+    transaction.executeSql(sql,[qty,id],function(){
+        $("#newqty"+id).html(qty);
+        alert("Item is updated successfully");
+    },function(transaction,err){
+        alert(err.message);
+    })
+    });
+    }
+    })
+    
+    },1000);
+    
+    
+    }
+    
+    function loadDataPendapatan(){
+        db.transaction(function(transaction){
+            var sql="select sum(transaction_.harga) as pendapatan from transaction_ where date_time = date('now')";
+            transaction.executeSql(sql,undefined,function(transaction,result){
+    if(result.rows.length){ 
+    for(var i=0;i<result.rows.length;i++){
+        var row=result.rows.item(i);
+        var pendapatan = row.pendapatan
+        $("#pendapatan").append('<p>Rp'+pendapatan/1000+'K</p>');
+    }
+    }else{
+        $("#pendapatan").append('<p>Rp0</p>');
+    }
+            },function(transaction,err){
+                ;
+            })
+        })
+    
+    
+    
+    
+    //setTimeout was used to execute codes inside it to be loaded after records are loaded/fetched.
+    
+    setTimeout(function(){
+        $(".deleteitem").click(function(){
+    var sure=confirm("Are you sure to delete this item?");
+    if(sure===true){
+        var id=$(this).data("id");
+    db.transaction(function(transaction){
+    var sql="DELETE FROM nota_table where namabarang=?";
+    transaction.executeSql(sql,[id],function(){
+        $("#del"+id).fadeOut();
+        alert("Item is deleted successfully");
+        loadData();
+    },function(transaction,err){
+        alert(err.message);
+    })
+    });
+    }
+    })
+    
+    $(".updateitem").click(function(){
+    var qty=prompt("Kindly enter new quantity",1);
+    if(qty!==null){
+        var id=$(this).data("id");
+    db.transaction(function(transaction){
+    var sql="UPDATE items SET quantity=? where id=?";
+    transaction.executeSql(sql,[qty,id],function(){
+        $("#newqty"+id).html(qty);
+        alert("Item is updated successfully");
+    },function(transaction,err){
+        alert(err.message);
+    })
+    });
+    }
+    })
+    
+    },1000);
+    
+    
+    }
+    
+  
+  
+  });
+
+  //alert("Selamat Datang!");
+
+  
+  
+  </script>
+  
+  </body>
+  </html>

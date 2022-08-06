@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>CatatApp</title>
+    
+    <link rel="stylesheet" href="style/barang.css">
+    <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+  </head>
+
+<body>
+<nav>
+	<input id="nav-toggle" type="checkbox">
+	<div class="logo">
+        <a>CatatApp</a>
+    </div>
+	<ul class="links">
+		<li><a href="index.html">Beranda</a></li>
+		<li><a href="transaksi.html">Transaksi</a></li>
+		<li><a href="barang.html">Kelola Barang</a></li>
+		<li><a href="#" class="reset" id="reset">Reset Data</a></li>
+	</ul>
+	<label for="nav-toggle" class="icon-burger">
+		<div class="line"></div>
+		<div class="line"></div>
+		<div class="line"></div>
+	</label>
+</nav>
+<div class="title">
+    <h1>Stok Barang</h1>
+</div>
+<div class="container1">
+    <table id="stokbarang">
+    </table>
+</div>
+<div class="container2">
+    <form>
+        <label>Nama Barang</label><br>
+        <input type="text" list = "namabarang_" id="namabarang" name=""/>
+        <datalist id="namabarang_">  
+        </datalist>
+        <br><br>
+
+        <label>Tambah/Masukan Stok</label><br>
+        <input type="number" id="stok" name=""><br><br>
+
+        <label>Harga Satuan</label><br>
+        <input type="number" id="hargasatuan" name=""><br><br>
+
+        <button type="button" id="Tambah" class="Tambah">Masukan</button>
+        <button type="button" id="Ubah" class="Ubah">Ubah</button>
+      </form>
+</div>
+
+<script type="text/javascript">
+var db=openDatabase("CatatApp","1.0","CatatApp",65535); // itemDB is the database name
+
+
+$(function(){
+
+
+loadData(); //loading our records
+
+
+
+//CREATING TABLE STARTS HERE
+
+$(function(){
+db.transaction(function(transaction){
+	var sql="CREATE TABLE items "+
+	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+	"namabarang VARCHAR(100) NOT NULL,"+
+	"stok INT(5) NOT NULL,"+
+    "hargasatuan INT(10) NOT NULL)";
+	transaction.executeSql(sql,undefined,function(){
+		;
+	},function(){
+		;
+	})
+});
+});
+
+$(function(){
+db.transaction(function(transaction){
+	var sql="CREATE TABLE items_ "+
+	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+	"namabarang VARCHAR(100) NOT NULL,"+
+	"stok INT(5) NOT NULL,"+
+    "hargasatuan INT(10) NOT NULL)";
+	transaction.executeSql(sql,undefined,function(){
+		;
+	},function(){
+		;
+	})
+});
+});
+
+$(function(){
+    db.transaction(function(transaction){
+        var sql="CREATE TABLE transaction_ "+
+        "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
+        "date_time text NOT NULL,"+
+        "namabarang VARCHAR(100) NOT NULL,"+
+        "jumlah INT(5) NOT NULL, harga INT(10) NOT NULL)";
+        transaction.executeSql(sql,undefined,function(){
+            ;
+        },function(){
+            ;
+        })
+    });
+    });
+// CREATING TABLE ENDS HERE
+
+
+
+//DELETING TABLE STARTS HERE
+$("#remove").click(function(){
+
+if(!confirm("Are you sure to delete this table?","")) return;;
+db.transaction(function(transaction){
+	var sql="DROP TABLE items";
+	transaction.executeSql(sql,undefined,function(){
+		alert("Table is deleted successfully")
+	},function(transaction,err){
+		alert(err.message);
+	})
+});
+db.transaction(function(transaction){
+	var sql="DROP TABLE items_";
+	transaction.executeSql(sql,undefined,function(){
+		alert("Table is deleted successfully")
+	},function(transaction,err){
+		alert(err.message);
+	})
+});
+});
+//DELETING TABLE ENDS HERE
+
+    //RESET DATA
+	$("#reset").click(function(){
+    db.transaction(function(transaction){
+    var sql="DROP TABLE items";
+    var sql2="DROP TABLE items_";
+    var sql3="DROP TABLE nota_table";
+    var sql4="DROP TABLE transaction_";
+    transaction.executeSql(sql,undefined,function(){
+    },function(transaction,err){
+        alert(err.message);
+    })
+    transaction.executeSql(sql2,undefined,function(){
+    },function(transaction,err){
+        alert(err.message);
+    })
+    transaction.executeSql(sql3,undefined,function(){
+    },function(transaction,err){
+    })
+    transaction.executeSql(sql4,undefined,function(){alert("Data Berhasil Dihapus");
+    },function(transaction,err){
+        alert(err.message);
+    })
+    }
+    );
+
+    })
+
+//INSERTING DATA INTO TABLE
+
+$("#Tambah").click(function(){
+var namabarang=$("#namabarang").val();
+var stok=$("#stok").val();
+var hargasatuan=$("#hargasatuan").val();
+db.transaction(function(transaction){
+var sql="INSERT INTO items(namabarang,stok,hargasatuan) VALUES(?,?,?)";
+transaction.executeSql(sql,[namabarang,stok,hargasatuan],function(){loadData();
+},function(transaction,err){
+	alert(err.message);
+})
+}
+);
+db.transaction(function(transaction){
+var sql="INSERT INTO items_(namabarang,stok,hargasatuan) VALUES(?,?,?)";
+transaction.executeSql(sql,[namabarang,stok,hargasatuan],function(){;
+},function(transaction,err){
+	alert(err.message);
+})
+}
+);
+})
+//INSERTING DATA ENDS HERE
+
+//Update Data
+$("#Ubah").click(function(){
+var namabarang=$("#namabarang").val();
+var stok=$("#stok").val();
+var hargasatuan=$("#hargasatuan").val();
+db.transaction(function(transaction){
+var sql="UPDATE items SET namabarang = ?, stok = stok + ?, hargasatuan = ? WHERE namabarang = ?";
+transaction.executeSql(sql,[namabarang,stok,hargasatuan,namabarang],function(){;
+},function(transaction,err){
+	alert(err.message);
+})
+}
+);
+db.transaction(function(transaction){
+var sql="UPDATE items_ SET namabarang = ?, stok = stok+?, hargasatuan = ? WHERE namabarang = ?";
+transaction.executeSql(sql,[namabarang,stok,hargasatuan,namabarang],function(){loadData();
+},function(transaction,err){
+	alert(err.message);
+})
+}
+);
+})
+
+
+//FETCHING OUR RECORD
+$("#list").click(function(){
+loadData();
+})
+
+
+
+//FUNCTION TO LOAD OUR RECORDS
+function loadData(){
+		$("#stokbarang").children().remove();
+	db.transaction(function(transaction){
+		//var sql="with after as (select namabarang, sum(jumlah) as jml from transaction_ group by namabarang) select items.id, items.namabarang, case when (items.stok - after.jml) is null then items.stok else (items.stok - after.jml) end as stok, items.hargasatuan from items left join after on items.namabarang = after.namabarang";
+		var sql = "select * from items_"
+		transaction.executeSql(sql,undefined,function(transaction,result){
+if(result.rows.length){
+    $("#stokbarang").append('<tr><th>Kode</th><th>Nama</th><th>Stok</th><th>Harga</th></tr>')
+for(var i=0;i<result.rows.length;i++){
+	var row=result.rows.item(i);
+	var namabarang=row.namabarang;
+	var id=row.id;
+	var stok=row.stok;
+    var hargasatuan = row.hargasatuan;
+	$("#stokbarang").append('<tr id="del'+id+'"><td>'+id+'</td><td>'+namabarang+'</td><td id="newqty'+id+'">'+stok+'</td><td>Rp'+hargasatuan+'</td><td><a href="#" class="hapus deleteitem"" data-id="'+id+'">Hapus</a></td></tr>');
+    $("#namabarang_").append('<option>'+namabarang+'</option>');
+}
+}else{
+	$("#stokbarang").append('<tr><td colspan="3" align="center">No Item Found</td></tr>');
+}
+		},function(transaction,err){
+			;
+		})
+	});
+
+
+
+
+//setTimeout was used to execute codes inside it to be loaded after records are loaded/fetched.
+
+setTimeout(function(){
+	$(".deleteitem").click(function(){
+var sure=confirm("Kamu yakin ingin menghapus barang?");
+if(sure===true){
+	var id=$(this).data("id");
+db.transaction(function(transaction){
+var sql="DELETE FROM items where id=?";
+transaction.executeSql(sql,[id],function(){
+	$("#del"+id).fadeOut();
+	alert("Barang berhasil di hapus");
+},function(transaction,err){
+	alert(err.message);
+})
+});
+db.transaction(function(transaction){
+var sql="DELETE FROM items_ where id=?";
+transaction.executeSql(sql,[id],function(){
+	$("#del"+id).fadeOut();
+	alert("Barang berhasil di hapus");
+},function(transaction,err){
+	alert(err.message);
+})
+});
+}
+})
+
+$(".updateitem").click(function(){
+var qty=prompt("Kindly enter new quantity",1);
+if(qty!==null){
+	var id=$(this).data("id");
+db.transaction(function(transaction){
+var sql="UPDATE items SET quantity=? where id=?";
+transaction.executeSql(sql,[qty,id],function(){
+	$("#newqty"+id).html(qty);
+	alert("Item is updated successfully");
+},function(transaction,err){
+	alert(err.message);
+})
+});
+}
+})
+
+},1000);
+
+
+}
+//END OF loadData() function
+
+
+
+
+});
+
+</script>
+
+</body>
+</html>

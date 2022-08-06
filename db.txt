@@ -1,0 +1,33 @@
+
+[Create]
+
+-[Transaction]
+create table Transaction (TransactionID integer NOT NULL PRIMARY KEY AUTO INCREAMENT,
+.
+
+-[Item]
+Create table Item (id integer NOT NULL PRIMARY KEY AUTO INCREAMENT,
+nama_barang varchar 100 not null, stok INT(5) not null, harga_satuan INT(12) not null)
+
+
+
+home.jumlah transaksi : "select count(TransactionID) as jumlah_transaksi 
+			group by TransactionID from Transaction where tanggal = date()"
+home.jumlah pendapatan : "select sum(Item.Price * Transaction.amount) as jumlah_pendapatan
+			from Transaction join Item on Transaction.ItemID = Item.ItemID where
+			tanggal = date()"
+
+transaksi.nama_barang : "select nama_barang from Item"
+transaksi.tambah : "insert into nota_table(tanggal,nama_barang, jumlah) values (date(),nama_barang, jumlah)"
+transaksi.nota : "select nota_table.nama_barang, nota_table.jumlah, (Item.Price * jumlah) as harga from nota_table join Item 
+		on nota_table.nama_barang = Item.nama_barang"
+transaksi.hapus : "delete from nota_table"
+transaksi.tambah : "
+
+
+barang.stok_barang : "select * from Item"
+barang.nama_barang : "select nama_barang from Item"
+barang.ubah : "UPDATE Item SET stok = var stok, harga_satuan = var harga_satuan
+WHERE nama_barang = nama_barang"
+barang.tambah : "insert into item (nama_barang, stok, harga_satuan) values (var nama_barang, stok, harga_satuan)"
+
