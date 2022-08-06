@@ -217,7 +217,7 @@ db.transaction(function(transaction){
     $("#Hapus").click(function(){
     db.transaction(function(transaction){
     var sql="DELETE FROM nota_table";
-    transaction.executeSql(sql,undefined,function(){loadData();loadDataTotal();
+    transaction.executeSql(sql,undefined,function(){loadData();
     },function(transaction,err){
         alert(err.message);
     })
@@ -236,26 +236,51 @@ db.transaction(function(transaction){
         loadData();
         loadDataTotal();
     db.transaction(function(transaction){
-    var sql="with temp as (SELECT nota_table.namabarang,jumlah,(items.hargasatuan * nota_table.jumlah) AS harga FROM nota_table INNER JOIN items ON nota_table.namabarang = items.namabarang) select * from temp";
+    var sql="with temp as (SELECT nota_table.namabarang,jumlah,stok,(items.hargasatuan * nota_table.jumlah) AS harga FROM nota_table INNER JOIN items ON nota_table.namabarang = items.namabarang) select * from temp";
     transaction.executeSql(sql,undefined,function(transaction,result){
         loadDataStok();
         loadData();
         loadDataTotal();
         if(result.rows.length){ 
         db.transaction(function(transaction){
+        var krg = 0;
         for(var i=0;i<result.rows.length;i++){
             var row=result.rows.item(i);
             var namabarang_=row.namabarang;
             var jumlah=row.jumlah;
             var harga=row.harga;
-        var sql="INSERT INTO transaction_(date_time,namabarang,jumlah,harga) VALUES(date('now'),?,?,?)";
-        transaction.executeSql(sql,[namabarang_,jumlah,harga],function(){loadDataTotal(); 
-        },function(transaction,err){
-            alert(err.message);
-        })
-        }}
-        );
-        alert("Transaksi Berhasil dicatat");
+            var stok = row.stok;
+            if(jumlah>stok){
+                krg = krg + 1;
+            }
+            else{
+                var c = 0;
+            }
+        }
+        if(krg>0){
+            alert("Stok kurang!, Masukan Ulang");
+            var sql_="DELETE FROM nota_table";
+            transaction.executeSql(sql_,undefined,function(){loadData();
+                },function(transaction,err){
+                    alert(err.message);
+                });               
+        }
+        else if (krg==0){
+            alert("Transaksi Berhasil dicatat");
+            for(var i=0;i<result.rows.length;i++){
+            var row=result.rows.item(i);
+            var namabarang_=row.namabarang;
+            var jumlah=row.jumlah;
+            var harga=row.harga;
+            var stok = row.stok;
+            var sql="INSERT INTO transaction_(date_time,namabarang,jumlah,harga) VALUES(date('now'),?,?,?)";
+            transaction.executeSql(sql,[namabarang_,jumlah,harga],function(){loadDataTotal();
+            },function(transaction,err){
+                alert(err.message);
+            })
+        }
+        }
+    });
     }else{alert('Tabel Kosong')}
     },function(transaction,err){
         alert(err.message);
