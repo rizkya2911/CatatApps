@@ -143,6 +143,51 @@ nav .icon-burger .line {
     margin-bottom: 40px;
 }
 
+.container3{
+    width: 100%;
+    height:auto;
+    padding-left: 8%;
+    padding-right: 8%;
+    box-sizing: border-box;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 0;
+    margin-top: 24px;
+    text-align: center;
+}
+
+.container1 h1 {
+	float: center;
+	width: auto;
+	justify-content: center;
+	text-align: center;
+	margin-top: 24px;
+	margin-bottom: 24px;
+	font-size: 16px;
+}
+
+.container3 h1 {
+	float: left;
+	width: auto;
+	justify-content: left;
+	text-align: left;
+	font-size: 16px;
+    color: #000;
+}
+
+.container3 table {
+	float: left;
+	width: 100%;
+	justify-content: center;
+	text-align: center;
+	font-size: 12px;
+    margin-top: 14px;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
 
 .container1 .col-1 {
 	float: left;

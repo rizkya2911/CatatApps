@@ -86,7 +86,7 @@
     $(function(){
     db.transaction(function(transaction){
         var sql="CREATE TABLE nota_table "+
-        "(namabarang VARCHAR(100) NOT NULL,"+
+        "(namabarang VARCHAR(100) NOT NULL UNIQUE,"+
         "jumlah INT(5) NOT NULL)";
         transaction.executeSql(sql,undefined,function(){
             ;
@@ -183,7 +183,7 @@ db.transaction(function(transaction){
     var sql="INSERT INTO nota_table(namabarang,jumlah) VALUES(?,?)";
     transaction.executeSql(sql,[namabarang,jumlah],function(){loadData();loadDataTotal();
     },function(transaction,err){
-        alert(err.message);
+        alert("Barang sudah ada!");
     })
     }
     );

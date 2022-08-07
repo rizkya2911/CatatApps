@@ -34,7 +34,7 @@
 </nav>
 
 <div class="container1">
-    <h1>Penjualan Hari Ini</h1>
+    <h1>Rangkuman Penjualan</h1>
     <div class="row">
         <div class="col-1" id="transaksi">
             <h4>Transaksi</h4>
@@ -43,6 +43,12 @@
             <h4>Pendapatan</h4>
         </div>
     </div>
+</div>
+
+<div class="container3">
+  <a href="barang.html"><h1>Catatan Penjualan</h1>
+  <table id="transaksi_">
+    </table>
 </div>
 
 <div class="container2">
@@ -87,7 +93,7 @@
 db.transaction(function(transaction){
 	var sql="CREATE TABLE items_ "+
 	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-	"namabarang VARCHAR(100) NOT NULL,"+
+	"namabarang VARCHAR(100) NOT NULL UNIQUE,"+
 	"stok INT(5) NOT NULL,"+
     "hargasatuan INT(10) NOT NULL)";
 	transaction.executeSql(sql,undefined,function(){
@@ -103,7 +109,7 @@ db.transaction(function(transaction){
         var sql="CREATE TABLE transaction_ "+
         "(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
         "date_time text NOT NULL,"+
-        "namabarang VARCHAR(100) NOT NULL,"+
+        "namabarang VARCHAR(100) NOT NULL UNIQUE,"+
         "jumlah INT(5) NOT NULL, harga INT(10) NOT NULL)";
         transaction.executeSql(sql,undefined,function(){
             ;
@@ -202,6 +208,7 @@ db.transaction(function(transaction){
   //FUNCTION TO LOAD OUR RECORDS
   function loadData(){
       $("#stokbarang").children().remove();
+      $("#transaksi_").children().remove();
     db.transaction(function(transaction){
       var sql="select * from items_ order by stok asc";
       transaction.executeSql(sql,undefined,function(transaction,result){
@@ -219,6 +226,28 @@ db.transaction(function(transaction){
   }
   }else{
     $("#stokbarang").append('<tr><td colspan="3" align="center">No Item Found</td></tr>');
+  }
+      },function(transaction,err){
+        ;
+      })
+    })
+
+    db.transaction(function(transaction){
+      var sql="select * from transaction_ order by date_time desc";
+      transaction.executeSql(sql,undefined,function(transaction,result){
+  if(result.rows.length){
+      $("#transaksi_").append('<tr><th>waktu</th><th>Nama</th><th>Jumlah</th><th>Harga</th></tr>')
+  
+  for(var i=0;i<result.rows.length;i++){
+    var row=result.rows.item(i);
+    var date_time=row.date_time;
+    var namabarang=row.namabarang;
+    var jumlah=row.jumlah;
+    var harga = row.harga;
+    $("#transaksi_").append('<tr id="del'+date_time+'"><td>'+date_time+'</td><td>'+namabarang+'</td><td id="newqty'+date_time+'">'+jumlah+'</td><td>Rp'+harga+'</td></tr>');
+  }
+  }else{
+    $("#transaksi_").append('<tr><td colspan="3" align="center">No Item Found</td></tr>');
   }
       },function(transaction,err){
         ;
@@ -273,7 +302,7 @@ db.transaction(function(transaction){
     //FUNCTION TO LOAD OUR RECORDS
   function loadDataTransaksi(){
         db.transaction(function(transaction){
-            var sql="select count(*) as transaksi from transaction_ where date_time = date('now')";
+            var sql="select count(*) as transaksi from transaction_";
             transaction.executeSql(sql,undefined,function(transaction,result){
     if(result.rows.length){ 
     for(var i=0;i<result.rows.length;i++){

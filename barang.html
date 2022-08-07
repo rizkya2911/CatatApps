@@ -75,12 +75,12 @@ $(function(){
 db.transaction(function(transaction){
 	var sql="CREATE TABLE items "+
 	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-	"namabarang VARCHAR(100) NOT NULL,"+
+	"namabarang VARCHAR(100) NOT NULL UNIQUE,"+
 	"stok INT(5) NOT NULL,"+
     "hargasatuan INT(10) NOT NULL)";
 	transaction.executeSql(sql,undefined,function(){
 		;
-	},function(){
+	},function(transaction,err){
 		;
 	})
 });
@@ -90,12 +90,12 @@ $(function(){
 db.transaction(function(transaction){
 	var sql="CREATE TABLE items_ "+
 	"(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"+
-	"namabarang VARCHAR(100) NOT NULL,"+
+	"namabarang VARCHAR(100) NOT NULL UNIQUE,"+
 	"stok INT(5) NOT NULL,"+
     "hargasatuan INT(10) NOT NULL)";
 	transaction.executeSql(sql,undefined,function(){
 		;
-	},function(){
+	},function(transaction,err){
 		;
 	})
 });
@@ -110,8 +110,8 @@ $(function(){
         "jumlah INT(5) NOT NULL, harga INT(10) NOT NULL)";
         transaction.executeSql(sql,undefined,function(){
             ;
-        },function(){
-            ;
+        },function(transaction,err){
+             ;
         })
     });
     });
@@ -179,7 +179,7 @@ db.transaction(function(transaction){
 var sql="INSERT INTO items(namabarang,stok,hargasatuan) VALUES(?,?,?)";
 transaction.executeSql(sql,[namabarang,stok,hargasatuan],function(){loadData();
 },function(transaction,err){
-	alert(err.message);
+	alert("Barang sudah ada!");
 })
 }
 );
@@ -187,7 +187,7 @@ db.transaction(function(transaction){
 var sql="INSERT INTO items_(namabarang,stok,hargasatuan) VALUES(?,?,?)";
 transaction.executeSql(sql,[namabarang,stok,hargasatuan],function(){;
 },function(transaction,err){
-	alert(err.message);
+	alert("Barang sudah ada!");
 })
 }
 );
