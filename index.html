@@ -364,7 +364,7 @@ db.transaction(function(transaction){
     
     function loadDataPendapatan(){
         db.transaction(function(transaction){
-            var sql="select sum(transaction_.harga) as pendapatan from transaction_ where date_time = date('now')";
+            var sql="select sum(transaction_.harga) as pendapatan from transaction_";
             transaction.executeSql(sql,undefined,function(transaction,result){
     if(result.rows.length){ 
     for(var i=0;i<result.rows.length;i++){
